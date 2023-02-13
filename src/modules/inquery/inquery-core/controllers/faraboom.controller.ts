@@ -17,7 +17,7 @@ import { FaraboomService } from '../../modules/faraboom/services/faraboom.servic
 })
 @Controller("inquery/faraboom")
 @UseInterceptors(ClassSerializerInterceptor)
-export class InqueryController {
+export class FaraboomController {
   constructor(
     private readonly faraboomService: FaraboomService
   ) { }
