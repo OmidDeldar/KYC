@@ -19,3 +19,7 @@ migrations: [
   logging: true,
   
 });
+let datasource: DataSource;
+export const ConnectDB = async() => {
+  datasource = await AppDataSource.initialize();
+}

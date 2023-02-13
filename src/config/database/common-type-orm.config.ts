@@ -18,6 +18,10 @@ export const OrmConfigModulePostgres= {
             username: process.env.DB_USERNAME,
             password: process.env.DB_PASSWORD,
             port: Number(process.env.DB_PORT),
+            entities: [ 
+                'dist/**/*.entity.js',
+                '**/*.entity.js'
+            ],
             synchronize: Boolean(process.env.DB_SYNCHRONIZE),
             autoLoadEntities: true,
         }
