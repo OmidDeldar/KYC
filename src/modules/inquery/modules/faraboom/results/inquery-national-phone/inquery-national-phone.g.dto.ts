@@ -15,9 +15,6 @@ export class InqueryNationalPhoneGDto {
     @ApiProperty()
     match: boolean;
 
-    @ApiProperty()
-    alive: boolean;
-
     constructor(init?: Partial<InqueryNationalPhoneEntity>) {
         this.id = init.id;
         this.national_code = init.national_code;

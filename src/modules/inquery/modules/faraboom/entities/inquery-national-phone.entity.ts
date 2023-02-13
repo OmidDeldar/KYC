@@ -3,7 +3,7 @@ import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity({ schema:SchemaEntityEnum.AUTH, name: "inquery_national_phone" })
 export class InqueryNationalPhoneEntity {
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn('uuid')
     id: string;
 
     @Column()
@@ -14,7 +14,4 @@ export class InqueryNationalPhoneEntity {
 
     @Column()
     match: boolean;
-
-    @Column({ nullable: true })
-    alive: boolean;
 }

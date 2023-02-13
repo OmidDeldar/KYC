@@ -37,6 +37,7 @@ export default class InquiryNationalUtility {
     this.faraboomConfigInterface.method = 'post';
     this.faraboomConfigInterface.url = `${process.env.FARABOOM_BASE_URL}identity/inquiry/birthDate`;
     const response = await axios({ headers: this.faraboomConfigInterface.headers, method: this.faraboomConfigInterface.method, url: this.faraboomConfigInterface.url, data: this.faraboomConfigInterface.data })
+    console.log('response =>>>>>>>',response.data);
     return response.data;
   }
 }

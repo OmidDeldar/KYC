@@ -120,4 +120,8 @@ export class FinooService {
     return requestData.result
   }
 
+  async createToken(){
+    
+  }
+
 }

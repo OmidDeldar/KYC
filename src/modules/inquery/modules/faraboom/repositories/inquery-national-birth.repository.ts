@@ -22,10 +22,6 @@ export class InqueryNationalBirthRepo extends AbstractRepositoryClass<
         birthNational.national_code = createDto.national_code;
         birthNational.birth_date = createDto.birth_date;
         birthNational.match = createDto.match;
-        birthNational.alive = createDto.alive;
-        birthNational.father_name = createDto.father_name;
-        birthNational.first_name = createDto.first_name;
-        birthNational.last_name = createDto.last_name;
         if (query) return await query.manager.save(birthNational);
         return await this.dataSource.manager.save(birthNational);
     }

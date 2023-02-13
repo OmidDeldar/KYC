@@ -21,7 +21,6 @@ CreatePhoneNationalMatchDto
         inqueryNationalPhoneEntity.national_code = createDto.national_code;
         inqueryNationalPhoneEntity.phone_number = createDto.phone_number;
         inqueryNationalPhoneEntity.match = createDto.match;
-        inqueryNationalPhoneEntity.alive = createDto.alive;
         if(query) return await query.manager.save(inqueryNationalPhoneEntity)
         return await this.dataSource.manager.save(inqueryNationalPhoneEntity);
     }
