@@ -1,1 +1,54 @@
-export const requestToken="eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbklkIjoiZmRhZDk1OTctMjg1OC00YzMyLTljZGMtOWFlYzM2NTY2MTA4IiwicmVmcmVzaFRva2VuIjoiNWpPZmVsNHRCZjJNNEt2QUlvbWVkdFVJZ213WEM0ZTFxZm5DUHU4STlZVWtMakw0M0d4UGVqVFkwZU1rNXBIVUhzRkt1cXE3NjJkUm5nMGhDRk5kZldtMHViTDdBSjJDcHdhSk1tVHE3ajB4d2dOamRDaldSZk1uMVFyakZ5ajYzNDlVRURZZVhCQ2I1Snc3NnRRZUlod0htemRWWEdVcW1PNGxSNjdlRXBkV1AwaWZvRGNQR3E4OXI3VGhkR3dzM1dJRnByQkRvc0dvbHFjeGdBMzRZSDhEOWtSZFFSQ1VMd2FwZk9LMHE4NDlOWGU2MzZKSldVdklKU2lQNWdMcSIsImNyZWF0aW9uRGF0ZSI6IjE0MDExMTA4MTUyNjIxIiwibGlmZVRpbWUiOjg2NDAwMDAwMCwiY2xpZW50SWQiOiJleGhhbXBhIiwidXNlcklkIjoiMDg3MjkxMjU1OCIsImFjdGl2ZSI6dHJ1ZSwic2NvcGVzIjpbIm9hazppYmFuLWlucXVpcnk6Z2V0IiwiY2FyZDppbmZvcm1hdGlvbjpnZXQiLCJmYWNpbGl0eTpjYXJkLXRvLWliYW46Z2V0IiwiZmFjaWxpdHk6Y2MtZGVwb3NpdC1pYmFuOmdldCIsImZhY2lsaXR5OmNhcmQtdG8tZGVwb3NpdDpnZXQiXSwidHlwZSI6IkNMSUVOVC1DUkVERU5USUFMIiwiY2xpZW50SW5mbyI6Ii9MbFRBcC94NllXTWw0cFVKNzBjVjA0V1RQZFFHM3lwUFdQRjlYNC9xcnZXTGZFKzBBYTZ4QU43dnQwSndoU3oiLCJiYW5rIjoiMDYyIiwiaWF0IjoxNjc0OTA2OTgxLCJleHAiOjE2NzU3NzA5ODF9.UfZN3e8GfIak1Ny2jQC1r6ZSo0S-2VWgQqxwkFmVmlZx7Is_UxFsFkSM3vrBsrueyGqhoedjHguLAv_9wem6Ai79LUN5rsbGm1w-q2HnDFSteIGTXk1v3F-S4o_7Rh9prt_dlGuuhb_bFaubpO5EhkYn_h3r0YAdSxq5C70LwxHP9TgY33OI9RQmTcSd6HI-ouGjFm2llNWAajOX_ZVjlisKdG2npcUSThBgFu3cBroZhxKzFlWKFqqUfZeaWr-p86FSPojsz7P9Y-nURref_j92vWQBZOly25lJLd1pOwjTQkU41JKq9vKGHLimjLkeu_kV0dPGlO716_xBtvcI7Q"
+import axios, { AxiosResponse } from 'axios';
+import { baseUrl, getTokenApi } from './urls';
+import { Cron, CronExpression } from '@nestjs/schedule';
+import { Injectable } from '@nestjs/common';
+import { APiScopesEnum } from './enums/scopes.enum';
+
+@Injectable()
+export class RequestToken {
+    constructor(){
+        this.generateToken()
+    }
+
+    private token: string;
+
+
+    private set setToken(v: string) {
+        this.token = v;
+    }
+
+
+    public get getToken(): string {
+        return this.token
+    }
+
+
+
+    @Cron('* * */240 * * *')
+    async generateToken() {
+        try {
+            
+            const requestHeader =
+            {
+                Content_type: 'application/json',
+                Authorization: `Basic ${process.env.FINOTECH_AUTH_TOKEN}`
+            }
+
+            const requestBody =
+            {
+                grant_type: "client_credentials",
+                nid: "0872912558",
+                scopes:
+                    `${APiScopesEnum.CARDDETAILS},${APiScopesEnum.CARDTODEPOSIT},${APiScopesEnum.CARDTOIBAN},${APiScopesEnum.DEPOSITTOIBAN},${APiScopesEnum.IBANINQUIRY}`
+            }
+
+            const request = await axios({ method: "POST", url: baseUrl + getTokenApi, headers: requestHeader, data: requestBody });
+            this.setToken = await request.data.result.value as string
+            // console.log(this.token);
+            // return request.data.result;
+        } catch (error) {
+            console.log('error =>>>>>>', error.response.data.error);
+        }
+
+    }
+}

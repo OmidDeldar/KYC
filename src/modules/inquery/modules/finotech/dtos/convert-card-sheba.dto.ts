@@ -8,7 +8,7 @@ export class ConvertBankAccountToShebaParam {
   trackId?:string
 
   @ApiProperty()
-  bank:BankEnums
+  bankCode:BankEnums
 
   @ApiProperty()
   deposit:string
