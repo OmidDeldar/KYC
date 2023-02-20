@@ -43,167 +43,193 @@ export class FinooService {
   ) {
   }
   async getBankCartDetail(getBankCardDetailDto: GetBankCardDetailDto): Promise<BankCardDetailResponse> {
+    try {
+      const requestHeader =
+      {
+        Authorization: `Bearer ${this.reqToken.getToken}`
+      }
 
-    const requestHeader =
-    {
-      Authorization: `Bearer ${this.reqToken.getToken}`
+
+      const sendRequest = await axios({ method: "GET", url: baseUrl + getBankCartDetailApi + getBankCardDetailDto.card_number, headers: requestHeader })
+
+      if (sendRequest.status !== HttpStatus.OK)
+        throw new AxiosRequestFailed()
+
+      const sendReuqestData: BankCardDetailResponse = sendRequest.data
+      if (sendReuqestData.error)
+        return sendReuqestData.error
+
+      const createCardDetailDto: CreateCardDetailDto = {
+        bankName: sendRequest.data.result.bankName,
+        card: String(getBankCardDetailDto.card_number),
+        description: sendRequest.data.result.description,
+        doTime: sendRequest.data.result.doTime,
+        name: sendRequest.data.result.name,
+        result: sendRequest.data.result.result,
+        status: sendRequest.data.status,
+        trackId: sendRequest.data.trackId
+      }
+
+      await this.cardDetailRepo.createEntity(createCardDetailDto);
+
+      return sendReuqestData
+    } catch (error) {
+      console.log(error.response.data.error);
     }
 
-    const sendRequest = await axios({ method: "GET", url: baseUrl + getBankCartDetailApi + getBankCardDetailDto.card_number, headers: requestHeader })
-    if (sendRequest.status !== HttpStatus.OK)
-      throw new AxiosRequestFailed()
 
-    const sendReuqestData: BankCardDetailResponse = sendRequest.data
-    if (sendReuqestData.error)
-      return sendReuqestData.error
-    
-    const createCardDetailDto: CreateCardDetailDto ={
-      bankName: sendRequest.data.result.bankName,
-      card: String(getBankCardDetailDto.card_number),
-      description: sendRequest.data.result.description,
-      doTime: sendRequest.data.result.doTime,
-      name: sendRequest.data.result.name,
-      result: sendRequest.data.result.result,
-      status: sendRequest.data.status,
-      trackId: sendRequest.data.trackId
-    }
-
-    await this.cardDetailRepo.createEntity(createCardDetailDto);
-
-    return sendReuqestData
   }
 
   async convertCardToSheba(convertCardToShebaParam: ConvertCardToShebaParam): Promise<any> {
-    const requestParam: IConvertCartToShebaParams = {
-      card: convertCardToShebaParam.card,
-      trackId: convertCardToShebaParam.trackId,
-      version: 2
+    try {
+      const requestParam: IConvertCartToShebaParams = {
+        card: convertCardToShebaParam.card,
+        trackId: convertCardToShebaParam.trackId,
+        version: 2
+      }
+
+      const requestHeader = { Authorization: `Bearer ${this.reqToken.getToken}` }
+
+      const sendRequest = await axios({ method: "GET", url: baseUrl + convertCartToShebaApi, params: requestParam, headers: requestHeader })
+      if (sendRequest.status !== HttpStatus.OK)
+        throw new AxiosRequestFailed()
+
+      const convertCartToShebaData: ConvertCardToShebaResponse = sendRequest.data
+      if (convertCartToShebaData.error)
+        return convertCartToShebaData.error
+
+      const createCardToShebaDto: CreateCardToShebaDto = {
+        bankName: convertCartToShebaData.result.bankName,
+        card: String(convertCartToShebaData.result.card),
+        deposit: convertCartToShebaData.result.deposit,
+        depositOwners: convertCartToShebaData.result.depositOwners,
+        depositStatus: String(convertCartToShebaData.result.depositStatus),
+        iban: convertCartToShebaData.result.IBAN,
+        trackId: convertCartToShebaData.trackId
+      }
+
+      await this.cardToShebaRepo.createEntity(createCardToShebaDto);
+      return convertCartToShebaData.result
+    } catch (error) {
+      console.log(error.response.data.error);
+
     }
 
-    const requestHeader = { Authorization: `Bearer ${this.reqToken.getToken}` }
-
-    const sendRequest = await axios({ method: "GET", url: baseUrl + convertCartToShebaApi, params: requestParam, headers: requestHeader })
-    if (sendRequest.status !== HttpStatus.OK)
-      throw new AxiosRequestFailed()
-
-    const convertCartToShebaData: ConvertCardToShebaResponse = sendRequest.data
-    if (convertCartToShebaData.error)
-      return convertCartToShebaData.error
-
-    const createCardToShebaDto: CreateCardToShebaDto = {
-      bankName: convertCartToShebaData.result.bankName,
-      card:  String(convertCartToShebaData.result.card),
-      deposit:  convertCartToShebaData.result.deposit,
-      depositOwners:  convertCartToShebaData.result.depositOwners,
-      depositStatus:  String(convertCartToShebaData.result.depositStatus),
-      iban: convertCartToShebaData.result.IBAN,
-      trackId:  convertCartToShebaData.trackId
-    }
-    
-    await this.cardToShebaRepo.createEntity(createCardToShebaDto);
-    return convertCartToShebaData.result
   }
 
   async getShebaDetail(shebaDetailParam: ShebaDetailParam): Promise<any> {
-    const requestParam: ShebaDetailParams = {
-      iban: shebaDetailParam.iban,
-      trackId: shebaDetailParam.trackId
+    try {
+      const requestParam: ShebaDetailParams = {
+        iban: shebaDetailParam.iban,
+        trackId: shebaDetailParam.trackId
+      }
+
+      const requestHeader = { Authorization: `Bearer ${this.reqToken.getToken}` }
+
+      const sendRequest = await axios({ method: "GET", url: baseUrl + getShebaDetailApi, headers: requestHeader, params: requestParam })
+      if (sendRequest.status !== HttpStatus.OK)
+        throw new AxiosRequestFailed()
+
+      const requestData: ShebaDetailResponse = sendRequest.data
+      if (requestData.error)
+        return requestData.error
+
+      const name = JSON.stringify(sendRequest.data.result.depositOwners)
+      const createShebaDetailDto: CreateShebaDetailDto = {
+        bankName: requestData.result.bankName,
+        deposit: requestData.result.deposit,
+        depositComment: requestData.result.depositComment,
+        depositDescription: requestData.result.depositDescription,
+        depositOwners: requestData.result.depositOwners,
+        depositStatus: requestData.result.depositStatus,
+        errorDescription: requestData.result.errorDescription,
+        iban: requestData.result.IBAN
+      }
+      await this.shebaDetailRepo.createEntity(createShebaDetailDto)
+
+      return requestData.result
+    } catch (error) {
+      console.log(error.response.data.error);
+
     }
 
-    const requestHeader = { Authorization: `Bearer ${this.reqToken.getToken}` }
-
-    const sendRequest = await axios({ method: "GET", url: baseUrl + getShebaDetailApi, headers: requestHeader, params: requestParam })
-    if (sendRequest.status !== HttpStatus.OK)
-      throw new AxiosRequestFailed()
-
-    const requestData: ShebaDetailResponse = sendRequest.data
-    if (requestData.error)
-      return requestData.error
-
-    const name = JSON.stringify(sendRequest.data.result.depositOwners)
-    const createShebaDetailDto: CreateShebaDetailDto = {
-      bankName: requestData.result.bankName,
-      deposit: requestData.result.deposit,
-      depositComment: requestData.result.depositComment,
-      depositDescription: requestData.result.depositDescription,
-      depositOwners: requestData.result.depositOwners,
-      depositStatus: requestData.result.depositStatus,
-      errorDescription: requestData.result.errorDescription,
-      iban: requestData.result.IBAN
-    }
-    await this.shebaDetailRepo.createEntity(createShebaDetailDto)
-    
-    return requestData.result
   }
 
   async convertCardToBankAccount(convertCardToBankAccountParam: ConvertCardToBankAccountParam): Promise<any> {
-    const requestParam: ConvertCardToBankAccountParam = {
-      card: convertCardToBankAccountParam.card,
-      trackId: convertCardToBankAccountParam.trackId
+    try {
+      const requestParam: ConvertCardToBankAccountParam = {
+        card: convertCardToBankAccountParam.card,
+        trackId: convertCardToBankAccountParam.trackId
+      }
+      console.log(convertCardToBankAccountParam);
+
+      const requestHeader = { Authorization: `Bearer ${this.reqToken.getToken}` }
+
+      const sendRequest = await axios({ method: "GET", url: baseUrl + convertCardToBankAccountApi, headers: requestHeader, params: requestParam })
+      if (sendRequest.status !== HttpStatus.OK)
+        throw new AxiosRequestFailed()
+
+      const requestData: ConvertCardToBankAccountResponse = sendRequest.data
+      if (requestData.error)
+        return requestData.error
+
+      const createCardtoAccountDto: CreateCardtoAccountDto = {
+        card: String(convertCardToBankAccountParam.card),
+        deposit: requestData.result.deposit,
+        description: requestData.result.description,
+        doTime: requestData.result.doTime,
+        name: requestData.result.name,
+        providerCod: requestData.result.providerCod,
+        result: requestData.result.result,
+        trackId: requestData.trackId
+      }
+
+      await this.cardToAccountRepo.createEntity(createCardtoAccountDto);
+      return requestData.result
+
+    } catch (error) {
+      console.log(error.response.data.error);
+
     }
-
-    const requestHeader = { Authorization: `Bearer ${this.reqToken.getToken}` }
-
-    const sendRequest = await axios({ method: "GET", url: baseUrl + convertCardToBankAccountApi, headers: requestHeader, params: requestParam })
-    if (sendRequest.status !== HttpStatus.OK)
-      throw new AxiosRequestFailed()
-
-    const requestData: ConvertCardToBankAccountResponse = sendRequest.data
-    if (requestData.error)
-      return requestData.error
-
-    const createCardtoAccountDto: CreateCardtoAccountDto = {
-      card: String(convertCardToBankAccountParam.card),
-      deposit: requestData.result.deposit,
-      description: requestData.result.description,
-      doTime: requestData.result.doTime,
-      name: requestData.result.name,
-      providerCod: requestData.result.providerCod,
-      result: requestData.result.result,
-      trackId: requestData.trackId
-    }
-    
-    await this.cardToAccountRepo.createEntity(createCardtoAccountDto);
-    return requestData.result
 
   }
 
   async convertBankAccountToSheba(convertBankAccountToShebaParam: ConvertBankAccountToShebaParam): Promise<any> {
     try {
       const requestParam: ConvertBankAccountToShebaParam =
-    {
-      bankCode: convertBankAccountToShebaParam.bankCode,
-      deposit: convertBankAccountToShebaParam.deposit,
-      trackId: convertBankAccountToShebaParam.trackId
-    }
+      {
+        bankCode: convertBankAccountToShebaParam.bankCode,
+        deposit: convertBankAccountToShebaParam.deposit,
+        trackId: convertBankAccountToShebaParam.trackId
+      }
 
-    const requestHeader = { Authorization: `Bearer ${this.reqToken.getToken}` }
+      const requestHeader = { Authorization: `Bearer ${this.reqToken.getToken}` }
 
-    const request = await axios({ method: "GET", url: baseUrl + convertBankAccountToShebaApi, headers: requestHeader, params: requestParam })
-    if (request.status !== HttpStatus.OK)
-      throw new AxiosRequestFailed()
+      const request = await axios({ method: "GET", url: baseUrl + convertBankAccountToShebaApi, headers: requestHeader, params: requestParam })
+      if (request.status !== HttpStatus.OK)
+        throw new AxiosRequestFailed()
 
-    const requestData: ConvertBankAccountToShebaResponse = request.data
-    if (requestData.error)
-      return requestData.error
-    
-    const createAccountToShebaDto: CreateAccountToShebaDto = {
-      accountStatus: request.data.result.accountStatus,
-      bankCode: convertBankAccountToShebaParam.bankCode,
-      bankName: requestData.result.bankName,
-      deposit: requestData.result.deposit,
-      depositOwners: String(requestData.result.depositOwners),
-      iban: request.data.result.iban,
-      status: requestData.status,
-      trackId: requestData.trackId
-    }
+      const requestData: ConvertBankAccountToShebaResponse = request.data
+      if (requestData.error)
+        return requestData.error
 
-    await this.accountToShebaRepo.createEntity(createAccountToShebaDto);
-    return requestData
+      const createAccountToShebaDto: CreateAccountToShebaDto = {
+        accountStatus: request.data.result.accountStatus,
+        bankCode: convertBankAccountToShebaParam.bankCode,
+        bankName: requestData.result.bankName,
+        deposit: requestData.result.deposit,
+        depositOwners: String(requestData.result.depositOwners),
+        iban: request.data.result.iban,
+        status: requestData.status,
+        trackId: requestData.trackId
+      }
+
+      await this.accountToShebaRepo.createEntity(createAccountToShebaDto);
+      return requestData
     } catch (error) {
       console.log(error.response.data.error);
     }
-    
+
   }
 
   async facilityWithNationalCode(facilityWithNationalCodeDto: FacilityWithNationalCodeDto) {
