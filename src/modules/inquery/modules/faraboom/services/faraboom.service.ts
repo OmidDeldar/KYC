@@ -32,6 +32,8 @@ export class FaraboomService {
         try {
             return await this.inqueryAccountingUtility.inquiryShebaFaraboom(createInquerySheba);
         } catch (e) {
+            
+            console.log(e);
             const result = await HandlerError.errorHandler(e);
             await this.handlerService.handlerException400("FA", result);
         }
@@ -68,6 +70,7 @@ export class FaraboomService {
             await this.inqueryNationalPhoneService.createPhoneWithMath(createPhoneNationalMatchDto)
             return result
         } catch (e) {
+            
             const result = await HandlerError.errorHandler(e);
             await this.handlerService.handlerException400("FA", result);
         }

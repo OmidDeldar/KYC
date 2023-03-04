@@ -16,7 +16,7 @@ export default class InquiryMobileUtility {
         'Accept-Language': 'fa',
         'App-Key': `${process.env.FARABOOM_API_KEY}`,
         'Token-Id': `${process.env.FARABOOM_TOKEN_ID}`,
-        'Device-Id': '138.201.196.198',
+        'Device-Id': '185.252.28.236',
         'CLIENT-DEVICE-ID': '127.0.0.1',
         'CLIENT-IP-ADDRESS': '127.0.0.1',
         'CLIENT-USER-AGENT': 'User Agent',

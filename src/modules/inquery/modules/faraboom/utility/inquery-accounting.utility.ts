@@ -14,8 +14,8 @@ export default class InquiryNationalUtility {
       headers: {
         'Accept-Language': 'fa',
         'App-Key': `${process.env.FARABOOM_API_KEY}`,
-        'Token-Id': `${process.env.FARABOOM_TOKEN_ID}`,
-        'Device-Id': '138.201.196.198',
+        'Token-Id': `HrHKeP6GxgnTJQgy9BYPJoQxuUwUSTL7YQljgrvfgDjv8u702Xl1LgQtioE89GcPtCOK5VVxARJgNRp5J8vOtQ2IE`,
+        'Device-Id': '185.252.28.236',
         'CLIENT-DEVICE-ID': '127.0.0.1',
         'CLIENT-IP-ADDRESS': '127.0.0.1',
         'CLIENT-USER-AGENT': 'User Agent',
@@ -34,6 +34,8 @@ export default class InquiryNationalUtility {
     this.faraboomConfigInterface.data = data;
     this.faraboomConfigInterface.method = 'post';
     this.faraboomConfigInterface.url = `${process.env.FARABOOM_BASE_URL}deposits/account/national-code`;
+    console.log('herteeeeeeeeeeeeeeeeeeee');
+    
     return this.httpService
       .post(
         this.faraboomConfigInterface.url,
@@ -42,6 +44,11 @@ export default class InquiryNationalUtility {
       )
       .pipe(
         catchError((e) => {
+          console.log("e.request");
+          console.log(e.request);
+          console.log("e");
+          console.log(e.response.data);
+          
           throw new BadRequestException(e);
         }),
         map((res) => {

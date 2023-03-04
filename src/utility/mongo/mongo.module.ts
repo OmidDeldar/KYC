@@ -7,7 +7,6 @@ import  mongoose from "mongoose";
 })
 export class MongoModule {
   static forRoot(host: string, port: number, dbName: string): DynamicModule {
-    console.log(host, port, dbName);
     return {
       imports: [],
       module: MongoModule,

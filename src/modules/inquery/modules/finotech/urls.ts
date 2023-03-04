@@ -12,6 +12,12 @@ export const convertCardToBankAccountApi="facility/v2/clients/exhampa/cardToDepo
 
 export const convertBankAccountToShebaApi="facility/v2/clients/exhampa/depositToIban"
 
-export const facilityWithNationalCode="facility/v2/clients/exhampa/users"
+export const facilityWithNationalCode="facility/v2/clients/exhampa/users/"
 
 export const banksInfo="facility/v2/clients/exhampa/banksInfo"
+
+export const preRequestTokenSms="/dev/v2/oauth2/authorize"
+
+export const verifyRequestTokenSms="/dev/v2/oauth2/verify/sms"
+
+export const confirmRequestTokenSms="/dev/v2/oauth2/token"
