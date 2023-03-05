@@ -61,7 +61,7 @@ export class FinooController {
   //   return await this.finooService.confirmRequestTokenSms(code);
   // }
 
-  @Post('kyc')
+  @Post('kyc/national/code')
   async kyc(@Body() facilityWithNationalCodeDto: FacilityWithNationalCodeDto){
     return await this.finooService.facilityWithNationalCode(facilityWithNationalCodeDto)
   }

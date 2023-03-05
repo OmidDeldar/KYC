@@ -27,6 +27,7 @@ import { ConvertCardToBankAccountResponse } from '../interfaces/convert-card-to-
 import { IConvertCartToShebaParams } from '../interfaces/convert-card-to-sheba-param.interface';
 import { ConvertCardToShebaResponse } from '../interfaces/convert-card-to-sheba-response.interface';
 import { FacilityNationalCodeResponse } from '../interfaces/facility-national-code-response.interface';
+import { PreREquestTokenSmsResponse } from '../interfaces/pre-request-token-sms-response.interface';
 import { ShebaDetailParams } from '../interfaces/sheba-detail-param.interface';
 import { ShebaDetailResponse } from '../interfaces/sheba-detail-response.interface';
 import { AccountToShebaRepo } from '../repository/account-to-sheba.repository';
@@ -291,7 +292,6 @@ export class FinooService {
         lastName: request.data.result.lastName,
         lastNameSimilarity: request.data.result.lastNameSimilarity
       }
-      console.log(createFacilityNationalCodeDto);
       await this.facilityNationalCodeRepo.createEntity(createFacilityNationalCodeDto);
 
       return requestData;
@@ -330,7 +330,8 @@ export class FinooService {
         params: requestParam,
         headers: requestHeader
       })
-      return request.data
+      const requestData: PreREquestTokenSmsResponse = request.data
+      return requestData
     } catch (error) {
       console.log(error.response.data.error);
     }
@@ -351,7 +352,6 @@ export class FinooService {
         url: baseUrl + verifyRequestTokenSms,
         data: verifyRequestTokenSmsDto
       })
-      console.log(request.data.result.code);
       await this.reqToken.confirmRequestTokenSms(request.data.result.code, verifyRequestTokenSmsDto.nid)
       return request.data
 

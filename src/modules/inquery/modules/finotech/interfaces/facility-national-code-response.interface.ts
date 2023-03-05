@@ -1,5 +1,11 @@
 export class FacilityNationalCodeResponse {
-    birthDate: string
+    responseCode: string
+    trackId: string
+    result:resultFacilityNationalCode
+    status: string
+}
+
+export class resultFacilityNationalCode {
     fullName?: string
     firstName?: string
     lastName?: string
@@ -10,4 +16,5 @@ export class FacilityNationalCodeResponse {
     fullNameSimilarity?: number
     firstNameSimilarity?: number
     lastNameSimilarity?: number
+    birthDate: string
 }
