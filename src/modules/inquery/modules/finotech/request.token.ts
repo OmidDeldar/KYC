@@ -1,17 +1,19 @@
 import axios, { AxiosResponse } from 'axios';
-import { baseUrl, getTokenApi } from './urls';
+import { baseUrl, confirmRequestTokenSms, getTokenApi } from './urls';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { Injectable } from '@nestjs/common';
 import { APiScopesEnum } from './enums/scopes.enum';
+import { ConfirmRequestTokenSmsDto } from './dtos/confirm-request-token-sms.dto';
+import { RedisService } from 'src/utility/redis/redis.service';
 
 @Injectable()
 export class RequestToken {
-    constructor(){
+  PREFIX_TOKEN_SMS_ = "PREFIX_TOKEN_SMS_"
+    constructor(private redisService: RedisService){
         this.generateToken()
     }
 
     private token: string;
-
 
     private set setToken(v: string) {
         this.token = v;
@@ -51,4 +53,38 @@ export class RequestToken {
         }
 
     }
+
+
+
+
+    async confirmRequestTokenSms(code: string, national_code: string) {
+        try {
+          const requestHeader =
+          {
+            Content_type: 'application/json',
+            Authorization: `Basic ${process.env.FINOTECH_AUTH_TOKEN}`
+          }
+    
+          const confirmRequestTokenSmsDto: ConfirmRequestTokenSmsDto = {
+            auth_type: "SMS",
+            code: code,
+            grant_type: "authorization_code",
+            redirect_uri: process.env.FINOTECH_REDIRECT_URI
+          }
+    
+          const request = await axios({
+            headers: requestHeader,
+            url: baseUrl + confirmRequestTokenSms,
+            data: confirmRequestTokenSmsDto,
+            method: "POST"
+          })
+          const redisData = {
+            token: request.data.result.value
+          }
+          await this.redisService.setKey(this.PREFIX_TOKEN_SMS_ + national_code,JSON.stringify(redisData),3600);
+          return request.data
+        } catch (error) {
+          console.log(error.response.data.error);
+        }
+      }
 }

@@ -3,6 +3,7 @@ import axios, { AxiosResponse } from 'axios';
 import { LOADIPHLPAPI } from 'dns';
 import { url } from 'inspector';
 import { HandlerError } from 'src/common/class/handler.error';
+import { RedisService } from 'src/utility/redis/redis.service';
 import { AxiosRequestFailed } from '../custom-exception/custom-exception';
 import { ConfirmRequestTokenSmsDto } from '../dtos/confirm-request-token-sms.dto';
 import { ConvertBankAccountToShebaParam } from '../dtos/convert-card-sheba.dto';
@@ -12,6 +13,7 @@ import { CreateAccountToShebaDto } from '../dtos/create-account-to-sheba.dto';
 import { CreateCardDetailDto } from '../dtos/create-card-detail.dto';
 import { CreateCardtoAccountDto } from '../dtos/create-card-to-account.dto';
 import { CreateCardToShebaDto } from '../dtos/create-card-to-sheba.dto';
+import { CreateFacilityNationalCodeDto } from '../dtos/create-facility-national-code.dto';
 import { CreateShebaDetailDto } from '../dtos/create-sheba-detail.dto';
 import { FacilityWithNationalCodeDto } from '../dtos/facility-with-national-code.dto';
 import { GetBankCardDetailDto } from '../dtos/get-card-bank-detail.dto';
@@ -24,12 +26,14 @@ import { ConvertBankAccountToShebaResponse } from '../interfaces/convert-bank-sh
 import { ConvertCardToBankAccountResponse } from '../interfaces/convert-card-to-bank.interface';
 import { IConvertCartToShebaParams } from '../interfaces/convert-card-to-sheba-param.interface';
 import { ConvertCardToShebaResponse } from '../interfaces/convert-card-to-sheba-response.interface';
+import { FacilityNationalCodeResponse } from '../interfaces/facility-national-code-response.interface';
 import { ShebaDetailParams } from '../interfaces/sheba-detail-param.interface';
 import { ShebaDetailResponse } from '../interfaces/sheba-detail-response.interface';
 import { AccountToShebaRepo } from '../repository/account-to-sheba.repository';
 import { CardDetailRepo } from '../repository/card-detail.repository';
 import { CardToAccountRepo } from '../repository/card-to-account.repository';
 import { CardToShebaRepo } from '../repository/card-to-sheba.repository';
+import { FacilityNationalCodeRepo } from '../repository/facility-national-code.repository';
 import { ShebaDetailRepo } from '../repository/sheba-detail.repository';
 import { RequestToken } from '../request.token';
 import { baseUrl, getBankCartDetailApi, convertCartToShebaApi, getShebaDetailApi, convertCardToBankAccountApi, convertBankAccountToShebaApi, facilityWithNationalCode, banksInfo, preRequestTokenSms, verifyRequestTokenSms, confirmRequestTokenSms } from '../urls';
@@ -38,13 +42,16 @@ import { baseUrl, getBankCartDetailApi, convertCartToShebaApi, getShebaDetailApi
 
 @Injectable()
 export class FinooService {
+  PREFIX_TOKEN_SMS_ = "PREFIX_TOKEN_SMS_"
   constructor(
     private reqToken: RequestToken,
     private cardDetailRepo: CardDetailRepo,
     private accountToShebaRepo: AccountToShebaRepo,
     private cardToAccountRepo: CardToAccountRepo,
     private cardToShebaRepo: CardToShebaRepo,
-    private shebaDetailRepo: ShebaDetailRepo
+    private shebaDetailRepo: ShebaDetailRepo,
+    private facilityNationalCodeRepo: FacilityNationalCodeRepo,
+    private redisService: RedisService
   ) {
   }
   async getBankCartDetail(getBankCardDetailDto: GetBankCardDetailDto): Promise<BankCardDetailResponse> {
@@ -239,10 +246,12 @@ export class FinooService {
 
   async facilityWithNationalCode(facilityWithNationalCodeDto: FacilityWithNationalCodeDto) {
     try {
+      const getToken = await this.redisService.getKey(this.PREFIX_TOKEN_SMS_ + facilityWithNationalCodeDto.national_code);
+
+      
       const requestHeader = {
-        Authorization: `Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6ImV4aGFtcGEiLCJzY29wZXMiOlsiZmFjaWxpdHk6c21zLW5pZC12ZXJpZmljYXRpb246Z2V0Il0sImxpZmVUaW1lIjoiODY0MDAwMDAwIiwidHlwZSI6IkNPREUiLCJjcmVhdGlvbkRhdGUiOiIxNDAxMTIxMzE0MzIxMCIsInVzZXJJZCI6IjA5MjU3ODUxNjQiLCJhdXRoX3R5cGUiOiJTTVMiLCJyZWZyZXNoVG9rZW4iOiJuVUs1Y3F2OVlyRmFIUXFxOFdXM0lCamhnQ0h6SDRCYkowY2ZuT1ZYbXp0NTZwRTBEbWthTE1Hc2FuY2VBc0lSS3VEU0g1YWhlbWxFcFZBMFI0Vk5SZ2FtNnRINnpEMzFubkR2SXU3Um1JTTlJUW5JaE50RjZ3OXcxZGl5RlNOcXZ5eWo1RmNyeG1oR0dmeTFyNjNHcmI0NzBrVzR2TVluY0RoT1hrZkc5amYyU2ZYNVo0SWlJUlFQSXVzaDJwdXdiQWxQWmhnaUpwd2E4b3J3eU9JVEw4ZU40QXduSVIyd0JTSXhWZVk2NmNodXFkOGdzS1UwekdzblNNejNhc1NKIiwiYmFuayI6IjA2MiIsImlhdCI6MTY3NzkyNzczMCwiZXhwIjoxNjc4NzkxNzMwfQ.b7im9tljxK8x-MkYQ52yezvuIZZ_MEItOj67W7cp9D89V0Ir8NKwak3-KjMJEg-CpTrlcecIf0k1cdVNn1RPaCbY7wJyvebPWxmCUh3BMya6FDK58EjnHFSwvgoqgn-yXmXUAO41838CGmXF-253TA0sNf-jZncL9O9eNTmuvd_qQ11F4Y8fQQxBD8vRAuplXlwnbbIQ_6I1wo4aoMa5mgBxdoW3ynpxyDPu0fxkgwz8VyuS-IW8fLtUGJabU25P13vRD2ALy2EM0VQ0d2BuULANU8o92fM7DU6aelzkk_LKiYmdZTOqQoy6PFabMe41uQNJbNhxa2jns5v9ha9bHg`
+        Authorization: `Bearer ${getToken.token}`
       }
-      const encodedString = Buffer.from(facilityWithNationalCodeDto.firstName).toString('base64')
       // const requestParam: FacilityWithNationalCodeDto = {
       //   birthDate: Buffer.from(facilityWithNationalCodeDto.birthDate).toString('base64'),
       //   fatherName: Buffer.from(facilityWithNationalCodeDto.fatherName).toString('base64'),
@@ -267,10 +276,29 @@ export class FinooService {
         params: requestParam
       })
 
-      return request.data;
+      const requestData: FacilityNationalCodeResponse = request.data;
+
+      const createFacilityNationalCodeDto: CreateFacilityNationalCodeDto = {
+        birthDate: request.data.result.birthDate,
+        deathStatus: request.data.result.deathStatus,
+        national_code: request.data.result.nationalCode,
+        fatherName: request.data.result.fatherName,
+        firstName: request.data.result.firstName,
+        firstNameSimilarity: request.data.result.firstNameSimilarity,
+        fullName: request.data.result.fullName,
+        fullNameSimilarity: request.data.result.fullNameSimilarity,
+        gender: request.data.result.gender,
+        lastName: request.data.result.lastName,
+        lastNameSimilarity: request.data.result.lastNameSimilarity
+      }
+      console.log(createFacilityNationalCodeDto);
+      await this.facilityNationalCodeRepo.createEntity(createFacilityNationalCodeDto);
+
+      return requestData;
       
     } catch (error) {
       console.log(error.response.data.error);
+      throw new Error(error.response.data.error.message);
 
     }
 
@@ -289,7 +317,7 @@ export class FinooService {
         auth_type: 'SMS',
         client_id: process.env.FINOTECH_CLIENT_ID,
         mobile: mobile,
-        redirect_uri: 'https://exhampa.com/auth',
+        redirect_uri: process.env.FINOTECH_REDIRECT_URI,
         response_type: 'code',
         scope: APiScopesEnum.FACILITYSMS,
       }
@@ -302,7 +330,6 @@ export class FinooService {
         params: requestParam,
         headers: requestHeader
       })
-      console.log(request.data);
       return request.data
     } catch (error) {
       console.log(error.response.data.error);
@@ -324,39 +351,15 @@ export class FinooService {
         url: baseUrl + verifyRequestTokenSms,
         data: verifyRequestTokenSmsDto
       })
-
+      console.log(request.data.result.code);
+      await this.reqToken.confirmRequestTokenSms(request.data.result.code, verifyRequestTokenSmsDto.nid)
       return request.data
 
     } catch (error) {
       console.log(error.response.data.error);
+      throw new Error(error.response.data.error.message);
     }
   }
 
-  async confirmRequestTokenSms(code: string) {
-    try {
-      const requestHeader =
-      {
-        Content_type: 'application/json',
-        Authorization: `Basic ${process.env.FINOTECH_AUTH_TOKEN}`
-      }
-
-      const confirmRequestTokenSmsDto: ConfirmRequestTokenSmsDto = {
-        auth_type: "SMS",
-        code: code,
-        grant_type: "authorization_code",
-        redirect_uri: "https://exhampa.com/auth"
-      }
-
-      const request = await axios({
-        headers: requestHeader,
-        url: baseUrl + confirmRequestTokenSms,
-        data: confirmRequestTokenSmsDto,
-        method: "POST"
-      })
-
-      return request.data
-    } catch (error) {
-      console.log(error.response.data.error);
-    }
-  }
+  
 }

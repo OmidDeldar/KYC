@@ -4,10 +4,12 @@ import { SwaggerService } from "./config/swagger/service/swagger.service";
 import {
   Logger as NestLogger
 } from "@nestjs/common";
+import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 async function bootstrap() {
   const nestLogger = new NestLogger('Main_Logger');
   const app = await NestFactory.create(AppModule);
   app.enableCors()
+  app.useGlobalFilters(new HttpExceptionFilter());
   const swaggerConfig = app.get<SwaggerService>(SwaggerService);
   swaggerConfig.init(app)
   const port=process.env.APP_PORT

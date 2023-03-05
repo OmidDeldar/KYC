@@ -56,10 +56,10 @@ export class FinooController {
     return await this.finooService.verifyRequestTokenSms(verifyRequestTokenSmsDto);
   }
 
-  @Get('confirm/request/token/sms')
-  async confirmRequestTokenSms(@Query('code') code: string){
-    return await this.finooService.confirmRequestTokenSms(code);
-  }
+  // @Get('confirm/request/token/sms')
+  // async confirmRequestTokenSms(@Query('code') code: string){
+  //   return await this.finooService.confirmRequestTokenSms(code);
+  // }
 
   @Post('kyc')
   async kyc(@Body() facilityWithNationalCodeDto: FacilityWithNationalCodeDto){

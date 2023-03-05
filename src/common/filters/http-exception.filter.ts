@@ -4,11 +4,6 @@ import { HistoryService } from 'src/utility/history/service/history.service';
 
 @Catch(HttpException)
 export class HttpExceptionFilter implements ExceptionFilter {
-  constructor(
-    private historyService: HistoryService,
-  ) {
-
-  }
   catch(exception: HttpException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
