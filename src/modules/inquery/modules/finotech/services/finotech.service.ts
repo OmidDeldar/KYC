@@ -88,6 +88,7 @@ export class FinooService {
       return sendReuqestData
     } catch (error) {
       console.log(error.response.data.error);
+      throw new BadRequestException(error.response.data.error.message);
     }
 
 
@@ -125,7 +126,7 @@ export class FinooService {
       return convertCartToShebaData.result
     } catch (error) {
       console.log(error.response.data.error);
-
+      throw new BadRequestException(error.response.data.error.message);
     }
 
   }
@@ -163,7 +164,7 @@ export class FinooService {
       return requestData.result
     } catch (error) {
       console.log(error.response.data.error);
-
+      throw new BadRequestException(error.response.data.error.message);
     }
 
   }
@@ -202,7 +203,7 @@ export class FinooService {
 
     } catch (error) {
       console.log(error.response.data.error);
-
+      throw new BadRequestException(error.response.data.error.message);
     }
 
   }
@@ -241,6 +242,7 @@ export class FinooService {
       return requestData
     } catch (error) {
       console.log(error.response.data.error);
+      throw new BadRequestException(error.response.data.error.message);
     }
 
   }
@@ -298,7 +300,7 @@ export class FinooService {
       
     } catch (error) {
       console.log(error.response.data.error);
-      throw new Error(error.response.data.error.message);
+      throw new BadRequestException(error.response.data.error.message);
 
     }
 
@@ -334,6 +336,7 @@ export class FinooService {
       return requestData
     } catch (error) {
       console.log(error.response.data.error);
+      throw new BadRequestException(error.response.data.error.message);
     }
   }
 
@@ -357,7 +360,7 @@ export class FinooService {
 
     } catch (error) {
       console.log(error.response.data.error);
-      throw new Error(error.response.data.error.message);
+      throw new BadRequestException(error.response.data.error.message);
     }
   }
 

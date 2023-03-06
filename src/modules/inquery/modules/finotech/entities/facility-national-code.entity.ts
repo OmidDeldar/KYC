@@ -30,13 +30,13 @@ export class FacilityNationalCodeEnt {
     @Column()
     deathStatus: string
 
-    @Column({nullable: true})
+    @Column({nullable: true,type: 'float8'})
     fullNameSimilarity: number
 
-    @Column({nullable: true})
+    @Column({nullable: true,type: 'float8'})
     firstNameSimilarity: number
 
-    @Column({nullable: true})
+    @Column({nullable: true,type: 'float8'})
     lastNameSimilarity: number
 
 
