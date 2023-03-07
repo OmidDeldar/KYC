@@ -1,4 +1,4 @@
-import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpStatus, Injectable, InternalServerErrorException } from '@nestjs/common';
 import axios, { AxiosResponse } from 'axios';
 import { LOADIPHLPAPI } from 'dns';
 import { url } from 'inspector';
@@ -300,6 +300,8 @@ export class FinooService {
       
     } catch (error) {
       console.log(error.response.data.error);
+      if (error.response.data.error.code == 'SERVER_ERROR')
+        throw new InternalServerErrorException();
       throw new BadRequestException(error.response.data.error.message);
 
     }
