@@ -34,20 +34,20 @@ export const OrmConfigModulePostgres= {
           password: process.env.DB_PASSWORD,
           port: Number(process.env.DB_PORT),
           migrations: [
-            'dist/migrations/*{.ts,.js}',
+            'dist/migrations/*.js',
         ],
           migrationsTableName:'updatePostTable1672484099418',
           migrationsRun:true
           
       }
   
-      if(!(await checkDatabase({options:dataSourceOptions})).exists){
-          createDatabase({options:dataSourceOptions}).then((res)=>{
-              console.log('Database created successfully')
-          }).catch((err)=>{
-              console.log(err)
-          })
-      }
+    //   if(!(await checkDatabase({options:dataSourceOptions})).exists){
+    //       createDatabase({options:dataSourceOptions}).then((res)=>{
+    //           console.log('Database created successfully')
+    //       }).catch((err)=>{
+    //           console.log(err)
+    //       })
+    //   }
   
       return options;
           

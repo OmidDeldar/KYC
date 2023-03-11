@@ -13,7 +13,7 @@ export const AppDataSource = new DataSource({
     '**/*.entity.js'
 ],
 migrations: [
-    'dist/migrations/*{.ts,.js}',
+    'dist/migrations/*.js',
 ],
   synchronize: Boolean(process.env.DB_SYNCHRONIZE),
   logging: true,
