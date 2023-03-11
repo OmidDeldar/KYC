@@ -1,6 +1,5 @@
 import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus, Inject } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { HistoryService } from 'src/utility/history/service/history.service';
 
 @Catch(HttpException)
 export class HttpExceptionFilter implements ExceptionFilter {
