@@ -1,14 +1,16 @@
 import { Body, Controller, Get, Header, Param, Post, Query, ValidationPipe } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ConvertBankAccountToShebaParam } from '../../modules/finotech/dtos/convert-card-sheba.dto';
 import { ConvertCardToBankAccountParam } from '../../modules/finotech/dtos/convert-card-to-bank.dto';
 import { ConvertCardToShebaParam } from '../../modules/finotech/dtos/convert-card-to-sheba.dto';
 import { FacilityWithNationalCodeDto } from '../../modules/finotech/dtos/facility-with-national-code.dto';
 import { GetBankCardDetailDto } from '../../modules/finotech/dtos/get-card-bank-detail.dto';
+import { MatchedMobileNationalCodeDto } from '../../modules/finotech/dtos/match-mobile-national-code.dto';
 import { ShebaDetailParam } from '../../modules/finotech/dtos/sheba-detail.dto';
 import { VerifyRequestTokenSmsDto } from '../../modules/finotech/dtos/verify-request-token-sms.dto';
 import { FinooService } from '../../modules/finotech/services/finotech.service';
 
+@ApiBearerAuth('apiKey')
 @ApiTags('Finoo')
 @Controller("finoo")
 export class FinooController {
@@ -64,5 +66,10 @@ export class FinooController {
   @Post('kyc/national/code')
   async kyc(@Body() facilityWithNationalCodeDto: FacilityWithNationalCodeDto){
     return await this.finooService.facilityWithNationalCode(facilityWithNationalCodeDto)
+  }
+
+  @Post('match/mobile/nationalcode')
+  async matchMobileNationalCode(@Body() matchedMobileNationalCodeDto: MatchedMobileNationalCodeDto){
+    return await this.finooService.matchedMobileNationalCode(matchedMobileNationalCodeDto);
   }
 }

@@ -41,7 +41,7 @@ export class RequestToken {
                 grant_type: "client_credentials",
                 nid: "0872912558",
                 scopes:
-                    `${APiScopesEnum.CARDDETAILS},${APiScopesEnum.CARDTODEPOSIT},${APiScopesEnum.CARDTOIBAN},${APiScopesEnum.DEPOSITTOIBAN},${APiScopesEnum.IBANINQUIRY}`
+                    `${APiScopesEnum.CARDDETAILS},${APiScopesEnum.CARDTODEPOSIT},${APiScopesEnum.CARDTOIBAN},${APiScopesEnum.DEPOSITTOIBAN},${APiScopesEnum.IBANINQUIRY},${APiScopesEnum.MATCHMOBILENATIONALCODE}`
             }
 
             const request = await axios({ method: "POST", url: baseUrl + getTokenApi, headers: requestHeader, data: requestBody });

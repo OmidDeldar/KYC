@@ -21,3 +21,5 @@ export const preRequestTokenSms="/dev/v2/oauth2/authorize"
 export const verifyRequestTokenSms="/dev/v2/oauth2/verify/sms"
 
 export const confirmRequestTokenSms="/dev/v2/oauth2/token"
+
+export const matchMobileNationalCode='kyc/v2/clients/exhampa/shahkar/accountConditionSmsSend'

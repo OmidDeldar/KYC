@@ -8,12 +8,14 @@ import { CardDetailEnt } from './entities/card-detail.entity';
 import { CardToAccountEnt } from './entities/card-to-account.entity';
 import { CardToShebaEnt } from './entities/card-to-sheba.entity';
 import { FacilityNationalCodeEnt } from './entities/facility-national-code.entity';
+import { MatchMobileNationalCodeEnt } from './entities/match-mobile-national-code.entity';
 import { ShebaDetailEnt } from './entities/sheba-detail.entity';
 import { AccountToShebaRepo } from './repository/account-to-sheba.repository';
 import { CardDetailRepo } from './repository/card-detail.repository';
 import { CardToAccountRepo } from './repository/card-to-account.repository';
 import { CardToShebaRepo } from './repository/card-to-sheba.repository';
 import { FacilityNationalCodeRepo } from './repository/facility-national-code.repository';
+import { MatchMobileNationalCodeRepo } from './repository/match-mobile-national-code.repository';
 import { ShebaDetailRepo } from './repository/sheba-detail.repository';
 import { RequestToken } from './request.token';
 import { FinooService } from './services/finotech.service';
@@ -27,7 +29,8 @@ import { FinooService } from './services/finotech.service';
       CardToAccountEnt,
       CardToShebaEnt,
       ShebaDetailEnt,
-      FacilityNationalCodeEnt
+      FacilityNationalCodeEnt,
+      MatchMobileNationalCodeEnt
     ]),
     HandlerModule,
     RedisModule.forRoot(process.env.REDIS_HOST,parseInt(process.env.REDIS_PORT))
@@ -40,7 +43,8 @@ import { FinooService } from './services/finotech.service';
     CardToAccountRepo,
     CardToShebaRepo,
     ShebaDetailRepo,
-    FacilityNationalCodeRepo
+    FacilityNationalCodeRepo,
+    MatchMobileNationalCodeRepo
   ],
   exports: [FinooService],
 })

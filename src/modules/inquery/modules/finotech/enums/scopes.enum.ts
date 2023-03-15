@@ -4,5 +4,6 @@ export enum APiScopesEnum {
     DEPOSITTOIBAN="facility:cc-deposit-iban:get",
     CARDTODEPOSIT="facility:card-to-deposit:get",
     IBANINQUIRY="oak:iban-inquiry:get",
-    FACILITYSMS="facility:sms-nid-verification:get"
+    FACILITYSMS="facility:sms-nid-verification:get",
+    MATCHMOBILENATIONALCODE="kyc:account-condition-sms-shahkar-send:get",
 }

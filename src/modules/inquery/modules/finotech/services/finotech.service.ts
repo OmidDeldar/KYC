@@ -14,9 +14,11 @@ import { CreateCardDetailDto } from '../dtos/create-card-detail.dto';
 import { CreateCardtoAccountDto } from '../dtos/create-card-to-account.dto';
 import { CreateCardToShebaDto } from '../dtos/create-card-to-sheba.dto';
 import { CreateFacilityNationalCodeDto } from '../dtos/create-facility-national-code.dto';
+import { CreateMatchMobileNationalCodeDto } from '../dtos/create-match-mobile-national-code';
 import { CreateShebaDetailDto } from '../dtos/create-sheba-detail.dto';
 import { FacilityWithNationalCodeDto } from '../dtos/facility-with-national-code.dto';
 import { GetBankCardDetailDto } from '../dtos/get-card-bank-detail.dto';
+import { MatchedMobileNationalCodeDto } from '../dtos/match-mobile-national-code.dto';
 import { PreRequestTokenSmsDto } from '../dtos/pre-request-token-sms.dto';
 import { ShebaDetailParam } from '../dtos/sheba-detail.dto';
 import { VerifyRequestTokenSmsDto } from '../dtos/verify-request-token-sms.dto';
@@ -27,6 +29,7 @@ import { ConvertCardToBankAccountResponse } from '../interfaces/convert-card-to-
 import { IConvertCartToShebaParams } from '../interfaces/convert-card-to-sheba-param.interface';
 import { ConvertCardToShebaResponse } from '../interfaces/convert-card-to-sheba-response.interface';
 import { FacilityNationalCodeResponse } from '../interfaces/facility-national-code-response.interface';
+import { MatchMobileNationaCodeResponse } from '../interfaces/match-mobile-national-code.response';
 import { PreREquestTokenSmsResponse } from '../interfaces/pre-request-token-sms-response.interface';
 import { ShebaDetailParams } from '../interfaces/sheba-detail-param.interface';
 import { ShebaDetailResponse } from '../interfaces/sheba-detail-response.interface';
@@ -35,10 +38,11 @@ import { CardDetailRepo } from '../repository/card-detail.repository';
 import { CardToAccountRepo } from '../repository/card-to-account.repository';
 import { CardToShebaRepo } from '../repository/card-to-sheba.repository';
 import { FacilityNationalCodeRepo } from '../repository/facility-national-code.repository';
+import { MatchMobileNationalCodeRepo } from '../repository/match-mobile-national-code.repository';
 import { ShebaDetailRepo } from '../repository/sheba-detail.repository';
 import { RequestToken } from '../request.token';
-import { baseUrl, getBankCartDetailApi, convertCartToShebaApi, getShebaDetailApi, convertCardToBankAccountApi, convertBankAccountToShebaApi, facilityWithNationalCode, banksInfo, preRequestTokenSms, verifyRequestTokenSms, confirmRequestTokenSms } from '../urls';
-
+import { baseUrl, getBankCartDetailApi, convertCartToShebaApi, getShebaDetailApi, convertCardToBankAccountApi, convertBankAccountToShebaApi, facilityWithNationalCode, banksInfo, preRequestTokenSms, verifyRequestTokenSms, confirmRequestTokenSms, matchMobileNationalCode } from '../urls';
+import { v4 as uuidv4 } from 'uuid';
 
 
 @Injectable()
@@ -52,7 +56,8 @@ export class FinooService {
     private cardToShebaRepo: CardToShebaRepo,
     private shebaDetailRepo: ShebaDetailRepo,
     private facilityNationalCodeRepo: FacilityNationalCodeRepo,
-    private redisService: RedisService
+    private redisService: RedisService,
+    private matchMobileNationalCodeRepo: MatchMobileNationalCodeRepo
   ) {
   }
   async getBankCartDetail(getBankCardDetailDto: GetBankCardDetailDto): Promise<BankCardDetailResponse> {
@@ -366,5 +371,38 @@ export class FinooService {
     }
   }
 
+  async matchedMobileNationalCode(matchedMobileNationalCodeDto: MatchedMobileNationalCodeDto){
+    try {
+      const requestParam: MatchedMobileNationalCodeDto={
+        mobile: matchedMobileNationalCodeDto.mobile,
+        nationalCode: matchedMobileNationalCodeDto.nationalCode,
+        trackId: uuidv4(),
+        version: 2
+      }
+      const requestHeader = { Authorization: `Bearer ${this.reqToken.getToken}` }
+      const request = await axios({ method: "GET", url: baseUrl + matchMobileNationalCode, headers: requestHeader, params: requestParam })
+      if (request.status !== HttpStatus.OK)
+        throw new AxiosRequestFailed()
+
+      const requestData: MatchMobileNationaCodeResponse = request.data
+      if (requestData.error)
+        return requestData.error
+
+      const matchMobileNationaCodeResponse: CreateMatchMobileNationalCodeDto = {
+        smsSent: requestData.result.smsSent,
+        status: requestData.status,
+        trackId: requestData.trackId,
+        responseCode: requestData.responseCode,
+        mobile: matchedMobileNationalCodeDto.mobile,
+        nationalCode: matchedMobileNationalCodeDto.nationalCode
+      }
+
+      await this.matchMobileNationalCodeRepo.createEntity(matchMobileNationaCodeResponse);
+      return requestData
+    } catch (error) {
+      console.log(error.response.data.error);
+      throw new BadRequestException(error.response.data.error.message);
+    }
+  }
   
 }
