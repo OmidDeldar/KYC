@@ -1,5 +1,6 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { AuthMiddleware } from 'src/common/middleware/auth.middleware';
 import { ConfigurationModule } from 'src/config/app/app-config.module';
 import { OrmConfigModulePostgres } from 'src/config/database/common-type-orm.config';
 import { TranslateModule } from 'src/utility/translate/translate.module';
@@ -21,4 +22,8 @@ import { AppService } from './app.service';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(AuthMiddleware).forRoutes('');
+    }
+}

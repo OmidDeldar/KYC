@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Header, Param, Post, Query, ValidationPipe } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiHeader, ApiTags } from '@nestjs/swagger';
 import { ConvertBankAccountToShebaParam } from '../../modules/finotech/dtos/convert-card-sheba.dto';
 import { ConvertCardToBankAccountParam } from '../../modules/finotech/dtos/convert-card-to-bank.dto';
 import { ConvertCardToShebaParam } from '../../modules/finotech/dtos/convert-card-to-sheba.dto';
@@ -12,6 +12,10 @@ import { FinooService } from '../../modules/finotech/services/finotech.service';
 
 @ApiBearerAuth('apiKey')
 @ApiTags('Finoo')
+@ApiHeader({
+  name: 'apiKey',
+  description: 'apiKey',
+})
 @Controller("finoo")
 export class FinooController {
   constructor(private finooService:FinooService)

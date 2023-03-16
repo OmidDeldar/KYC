@@ -9,11 +9,8 @@ import { FaraboomService } from '../../modules/faraboom/services/faraboom.servic
 @ApiBearerAuth('access-token')
 @ApiTags('Inquery Faraboom')
 @ApiHeader({
-  name: 'language-code',
-  description: 'language code',
-  schema: {
-    default: 'EN'
-  }
+  name: 'apiKey',
+  description: 'apiKey',
 })
 @Controller("inquery/faraboom")
 @UseInterceptors(ClassSerializerInterceptor)

@@ -1,5 +1,6 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
+import { AuthMiddleware } from 'src/common/middleware/auth.middleware';
 import { ApiKeyStrategy } from 'src/common/strategy/api-key.strategy';
 import { AuthService } from './service/auth.service';
 @Module({

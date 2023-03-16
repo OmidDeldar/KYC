@@ -16,7 +16,7 @@ export class SwaggerService {
       .setVersion(this.version)
       .addBearerAuth(
         { type: 'http', scheme: 'Bearer', bearerFormat: 'Token', in: 'header' },
-        'access-token',
+        'apiKey',
       )
       .build();
     const options: SwaggerDocumentOptions = {
